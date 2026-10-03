@@ -6,6 +6,8 @@ are needed. --check is suitable for CI and never writes files.
 """
 
 import argparse
+import hashlib
+import json
 from pathlib import Path
 import re
 import sys
@@ -22,8 +24,8 @@ LONG_ALIASES = f"""#if {WINDOWS}
 using CLong = System.Int32;
 using CULong = System.UInt32;
 #else
-using CLong = System.Int64;
-using CULong = System.UInt64;
+using CLong = System.IntPtr;
+using CULong = System.UIntPtr;
 #endif"""
 
 
@@ -49,6 +51,133 @@ def plain_parameters(parameters):
         modifier, kind, name = match.groups()
         result.append((modifier, kind, name))
     return result
+
+
+class NativeTypes:
+    """Restore typedefs erased by the upstream 64-bit binding generator.
+
+    The checked-in map is extracted from Clang's AST, scoped to each member. In
+    particular, int64_t timestamps and size_t lengths must not be conflated just
+    because upstream emitted `long`/`ulong` for both on its generation host.
+    """
+
+    def __init__(self):
+        path = ROOT / "Tools/unity-native-types.json"
+        self.mapping = json.loads(path.read_text(encoding="utf-8"))
+        self.seen = set()
+        self.arrays = set()
+        for relative, expected in {**self.mapping["headers"], **self.mapping["sources"]}.items():
+            source = ROOT / relative
+            actual = hashlib.sha256(source.read_text(encoding="utf-8-sig").encode("utf-8")).hexdigest()
+            if actual != expected:
+                raise ValueError(f"Native type map is stale: {relative}. Run Tools/extract-unity-native-types.py first.")
+
+    def convert(self, old, native, key):
+        match = re.fullmatch(r"(size_t|ptrdiff_t|intptr_t|uintptr_t)(\*+|\[\d+\])?", native)
+        if not match:
+            raise ValueError(f"Unrecognized native integer declaration: {key} = {native}")
+        scalar, suffix = match.groups()
+        unsigned = scalar in ("size_t", "uintptr_t")
+        managed = "nuint" if unsigned else "nint"
+        previous = "ulong" if unsigned else "long"
+        if suffix and suffix.startswith("["):
+            length = int(suffix[1:-1])
+            self.arrays.add((managed, length))
+            managed += f"_array{length}"
+            previous += f"_array{length}"
+        else:
+            managed += suffix or ""
+            previous += suffix or ""
+        if old != previous or key in self.seen:
+            raise ValueError(f"Native type map mismatch for {key}: expected one {previous}, found {old}")
+        self.seen.add(key)
+        return managed
+
+    def signature(self, section, returns, name, parameters):
+        spec = self.mapping[section].get(name)
+        if not spec:
+            return returns, parameters
+        if "return" in spec:
+            returns = self.convert(returns, spec["return"], (section, name, "return"))
+        for parameter, native in spec.get("parameters", {}).items():
+            pattern = rf"\b(\w+(?:\*|\[\])*) (?=@{re.escape(parameter)}\b)"
+            parameters, count = re.subn(pattern,
+                lambda m: self.convert(m[1], native, (section, name, parameter)) + " ", parameters)
+            if count != 1:
+                raise ValueError(f"Expected one native-sized parameter: {name}.{parameter}")
+        return returns, parameters
+
+    def declarations(self, text, section):
+        keyword = "unsafe delegate" if section == "delegates" else "static"
+        pattern = rf"(public {keyword} )(\S+) (\w+)(\s*)\(([^;]*?)\)"
+        def replace(match):
+            prefix, returns, name, space, parameters = match.groups()
+            returns, parameters = self.signature(section, returns, name, parameters)
+            return f"{prefix}{returns} {name}{space}({parameters})"
+        return re.sub(pattern, replace, text)
+
+    def structs(self, text):
+        def replace(match):
+            name, body = match.groups()
+            for field, native in self.mapping["structs"].get(name, {}).items():
+                pattern = rf"(public )(\w+(?:\*)*)( @{re.escape(field)};)"
+                body, count = re.subn(pattern,
+                    lambda m: m[1] + self.convert(m[2], native, ("structs", name, field)) + m[3], body)
+                if count != 1:
+                    raise ValueError(f"Expected one native-sized field: {name}.{field}")
+            return f"public unsafe partial struct {name}\n{{{body}\n}}"
+        return re.sub(r"public unsafe partial struct (\w+)\n\{(.*?)\n\}", replace, text, flags=re.S)
+
+    def verify(self):
+        expected = set()
+        for section in ("functions", "delegates"):
+            for name, spec in self.mapping[section].items():
+                if "return" in spec:
+                    expected.add((section, name, "return"))
+                expected.update((section, name, param) for param in spec.get("parameters", {}))
+        for name, spec in self.mapping["structs"].items():
+            expected.update(("structs", name, field) for field in spec)
+        if expected != self.seen:
+            raise ValueError(f"Unapplied native type mappings: {sorted(expected - self.seen)}")
+
+    def fixed_arrays(self):
+        # C# does not allow fixed nint/nuint buffers. Consecutive native integer
+        # fields provide the same inline C layout on both 32-bit and 64-bit runtimes.
+        text = "using System;\n\nnamespace FFmpeg.AutoGen;\n"
+        for kind, length in sorted(self.arrays):
+            name = f"{kind}_array{length}"
+            fields = " ".join(f"{kind} _{i};" for i in range(length))
+            text += f"""
+public unsafe struct {name} : IFixedArray<{kind}>
+{{
+    public static readonly int Size = {length};
+    public int Length => {length};
+    {fields}
+
+    public {kind} this[uint index]
+    {{
+        get {{ if (index >= {length}) throw new ArgumentOutOfRangeException(nameof(index)); fixed ({kind}* p = &_0) {{ return p[index]; }} }}
+        set {{ if (index >= {length}) throw new ArgumentOutOfRangeException(nameof(index)); fixed ({kind}* p = &_0) {{ p[index] = value; }} }}
+    }}
+
+    public {kind}[] ToArray()
+    {{
+        var result = new {kind}[{length}];
+        fixed ({kind}* p = &_0) {{ for (int i = 0; i < {length}; i++) result[i] = p[i]; }}
+        return result;
+    }}
+
+    public void UpdateFrom({kind}[] array)
+    {{
+        if (array == null) throw new ArgumentNullException(nameof(array));
+        int count = Math.Min(array.Length, {length});
+        fixed ({kind}* p = &_0) {{ for (int i = 0; i < count; i++) p[i] = array[i]; }}
+    }}
+
+    public static implicit operator {kind}[]({name} value) => value.ToArray();
+}}
+"""
+        return block_namespace(text)
 
 
 def generate_function(match, libraries):
@@ -109,11 +238,13 @@ def generate_function(match, libraries):
 
 def generated_files():
     files = {}
+    native_types = NativeTypes()
     generated = PACKAGE / "Runtime" / "Generated"
     for name in ["Arrays.g.cs", "Enums.g.cs", "Structs.g.cs", "Delegates.g.cs", "ffmpeg.macros.g.cs", "ffmpeg.functions.inline.g.cs", "ffmpeg.libraries.g.cs"]:
         text = read_source("generated/" + name)
         text = re.sub(r"#if NET6_0_OR_GREATER\nusing CLong = .*?\n#endif", LONG_ALIASES, text, flags=re.S)
         if name == "Structs.g.cs":
+            text = native_types.structs(text)
             # Windows SDK DWORD/ULONG members are always 32-bit, even when these
             # otherwise-unused hardware structures are compiled on a Unix host.
             for field in ["Data1", "surface_type"]:
@@ -126,8 +257,11 @@ def generated_files():
             # Reverse P/Invoke signatures must contain native pointers, not
             # marshaled managed strings or single-field callback structs.
             text = re.sub(r"(public unsafe delegate[^;]+);", lambda m: re.sub(r"\b\w+_func (?=@)", "IntPtr ", m[0]), text)
+            text = native_types.declarations(text, "delegates")
             if "MarshalAs" in text:
                 raise ValueError("New callback marshalling requires review")
+        if name == "ffmpeg.functions.inline.g.cs":
+            text = native_types.declarations(text, "functions")
         files[generated / name] = block_namespace(text)
 
     linked = (ROOT / "FFmpeg.AutoGen.Bindings.DynamicallyLinked/generated/DynamicallyLinkedBindings.g.cs").read_text(encoding="utf-8-sig")
@@ -135,17 +269,20 @@ def generated_files():
     libraries = {name: library for library, _, name in imports}
     versions = dict((library, version) for library, version, _ in imports)
     facade = read_source("generated/ffmpeg.functions.facade.g.cs")
+    facade = native_types.declarations(facade, "functions")
     pattern = r"^    public static (\S+) (\w+)\(([^\n]*)\) => vectors\.[^\n]+;"
     facade, count = re.subn(pattern, lambda m: generate_function(m, libraries), facade, flags=re.M)
     if count != len(libraries) or "vectors." in facade:
         raise ValueError(f"Facade/import mismatch: {count} functions, {len(libraries)} imports")
     files[generated / "ffmpeg.functions.g.cs"] = block_namespace(facade)
+    native_types.verify()
+    files[generated / "NativeArrays.g.cs"] = native_types.fixed_arrays()
     constants = [HEADER.rstrip(), "namespace FFmpeg.AutoGen", "{", "internal static class NativeLibraries", "{"]
     for condition, template in [(WINDOWS, "{lib}-{version}"), (MAC, "lib{lib}.{version}.dylib"), (LINUX, "lib{lib}.so.{version}"), ("UNITY_ANDROID && !UNITY_EDITOR", "{lib}"), ("UNITY_IOS && !UNITY_EDITOR", "__Internal")]:
         constants.append(("#if " if condition == WINDOWS else "#elif ") + condition)
         for lib, version in sorted(versions.items()):
             constants.append(f'    internal const string {lib} = "{template.format(lib=lib, version=version)}";')
-    constants += ["#else", '#error FFmpeg.AutoGen supports only 64-bit Windows, Linux, macOS, Android and iOS.', "#endif", "}", "}", ""]
+    constants += ["#else", '#error FFmpeg.AutoGen supports Windows, Linux, macOS, Android and iOS.', "#endif", "}", "}", ""]
     files[generated / "NativeLibraries.g.cs"] = "\n".join(constants)
     files[generated / "IFixedArray.g.cs"] = block_namespace(read_source("IFixedArray.cs"))
     files[PACKAGE / "LICENSE.md"] = (ROOT / "LICENSE.txt").read_text(encoding="utf-8-sig")

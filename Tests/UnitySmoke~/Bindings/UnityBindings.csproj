@@ -6,11 +6,12 @@
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
     <AssemblyName>FFmpeg.AutoGen.Unity.SmokeBindings</AssemblyName>
     <UnityPlatform Condition="'$(UnityPlatform)' == ''">Windows</UnityPlatform>
-    <DefineConstants>$(DefineConstants);UNITY_6000_0_OR_NEWER;UNITY_64</DefineConstants>
-    <DefineConstants Condition="'$(UnityPlatform)' == 'Windows'">$(DefineConstants);UNITY_STANDALONE_WIN</DefineConstants>
+    <DefineConstants>$(DefineConstants);UNITY_6000_0_OR_NEWER</DefineConstants>
+    <DefineConstants Condition="'$(UnityPlatform)' != 'WindowsX86' and '$(UnityPlatform)' != 'AndroidArmv7'">$(DefineConstants);UNITY_64</DefineConstants>
+    <DefineConstants Condition="'$(UnityPlatform)' == 'Windows' or '$(UnityPlatform)' == 'WindowsX86'">$(DefineConstants);UNITY_STANDALONE_WIN</DefineConstants>
     <DefineConstants Condition="'$(UnityPlatform)' == 'Linux'">$(DefineConstants);UNITY_STANDALONE_LINUX</DefineConstants>
     <DefineConstants Condition="'$(UnityPlatform)' == 'MacOS'">$(DefineConstants);UNITY_STANDALONE_OSX</DefineConstants>
-    <DefineConstants Condition="'$(UnityPlatform)' == 'Android'">$(DefineConstants);UNITY_ANDROID</DefineConstants>
+    <DefineConstants Condition="'$(UnityPlatform)' == 'Android' or '$(UnityPlatform)' == 'AndroidArmv7'">$(DefineConstants);UNITY_ANDROID</DefineConstants>
     <DefineConstants Condition="'$(UnityPlatform)' == 'IOS'">$(DefineConstants);UNITY_IOS</DefineConstants>
     <DefineConstants Condition="'$(UnityPlatform)' == 'EditorAndroid'">$(DefineConstants);UNITY_EDITOR;UNITY_EDITOR_WIN;UNITY_ANDROID</DefineConstants>
     <DefineConstants Condition="'$(UnityPlatform)' == 'EditorIOS'">$(DefineConstants);UNITY_EDITOR;UNITY_EDITOR_WIN;UNITY_IOS</DefineConstants>

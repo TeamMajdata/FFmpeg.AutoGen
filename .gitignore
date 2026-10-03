@@ -120,3 +120,6 @@ FFmpeg/bin/
 # Claude
 .claude/
 CLAUDE.md
+
+# Python binding generation tools
+__pycache__/

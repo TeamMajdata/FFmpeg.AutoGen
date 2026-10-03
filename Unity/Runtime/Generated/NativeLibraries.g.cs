@@ -44,7 +44,7 @@ internal static class NativeLibraries
     internal const string swresample = "__Internal";
     internal const string swscale = "__Internal";
 #else
-#error FFmpeg.AutoGen supports only 64-bit Windows, Linux, macOS, Android and iOS.
+#error FFmpeg.AutoGen supports Windows, Linux, macOS, Android and iOS.
 #endif
 }
 }

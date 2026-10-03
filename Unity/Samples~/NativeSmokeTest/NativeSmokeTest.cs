@@ -57,6 +57,13 @@ namespace FFmpeg.AutoGen.Samples
             if (ffmpeg.av_image_fill_linesizes(ref linesizes, AVPixelFormat.AV_PIX_FMT_RGBA, 16) < 0 || linesizes[0] != 64)
                 throw new InvalidOperationException("Fixed array ABI failed.");
 
+            // size_t* must write exactly one native-width element on every architecture.
+            nuint* sizes = stackalloc nuint[2];
+            sizes[0] = 0;
+            sizes[1] = 0x12345678;
+            if (ffmpeg.av_size_mult(3, 5, sizes) != 0 || sizes[0] != 15 || sizes[1] != 0x12345678)
+                throw new InvalidOperationException("Native-sized integer output ABI failed.");
+
             var data = (byte*)ffmpeg.av_malloc(16);
             if (data == null)
                 throw new OutOfMemoryException();
@@ -68,7 +75,15 @@ namespace FFmpeg.AutoGen.Samples
                 ffmpeg.av_free(data);
                 throw new OutOfMemoryException();
             }
-            ffmpeg.av_buffer_unref(&buffer);
+            try
+            {
+                if (buffer->size != 16)
+                    throw new InvalidOperationException("AVBufferRef native-sized field layout failed.");
+            }
+            finally
+            {
+                ffmpeg.av_buffer_unref(&buffer);
+            }
             if (_freedBuffers != before + 1)
                 throw new InvalidOperationException("Native-to-managed callback failed.");
         }

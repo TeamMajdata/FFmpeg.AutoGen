@@ -230,7 +230,7 @@ public static unsafe partial class ffmpeg
     /// <param name="errbuf_size">size in bytes of errbuf</param>
     /// <param name="errnum">error code to describe</param>
     /// <returns>the buffer in input, filled with the error description</returns>
-    public static byte* av_make_error_string(byte* @errbuf, ulong @errbuf_size, int @errnum)
+    public static byte* av_make_error_string(byte* @errbuf, nuint @errbuf_size, int @errnum)
     {
         av_strerror(errnum, errbuf, errbuf_size);
         return errbuf;

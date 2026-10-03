@@ -29,6 +29,7 @@ EXPORT void av_free(void *p)
 EXPORT void *av_malloc(size_t size) { return tracked_alloc(size); }
 EXPORT const char *av_version_info(void) { return utf8_version; }
 EXPORT unsigned avutil_version(void) { return 61U << 16; }
+EXPORT size_t av_cpu_max_align(void) { return (size_t)0xf1234567U; }
 EXPORT int smoke_outstanding_allocations(void) { return outstanding_allocations; }
 
 EXPORT char *av_strdup(const char *s)
@@ -38,6 +39,20 @@ EXPORT char *av_strdup(const char *s)
     char *p = (char *)tracked_alloc(n);
     if (p) memcpy(p, s, n);
     return p;
+}
+
+EXPORT int av_file_map(const char *filename, uint8_t **data, size_t *size, int log_offset, void *log_context)
+{
+    if (!filename || !data || !size || log_offset != 0x2468 || log_context != (void *)(uintptr_t)0x3456)
+        return -22;
+    *data = (uint8_t *)av_strdup("mapped");
+    *size = 6;
+    return *data ? 0 : -12;
+}
+
+EXPORT void av_file_unmap(uint8_t *data, size_t size)
+{
+    if (size == 6) av_free(data);
 }
 
 typedef struct { char *key, *value; } DictionaryEntry;
@@ -106,6 +121,26 @@ EXPORT void av_buffer_unref(BufferRef **pb)
     av_free(b);
 }
 
+typedef BufferRef *(*pool_alloc_callback)(size_t);
+typedef struct { size_t size; pool_alloc_callback allocate; } BufferPool;
+
+EXPORT BufferPool *av_buffer_pool_init(size_t size, pool_alloc_callback allocate)
+{
+    BufferPool *pool = (BufferPool *)tracked_alloc(sizeof(BufferPool));
+    if (pool) { pool->size = size; pool->allocate = allocate; }
+    return pool;
+}
+
+EXPORT BufferRef *av_buffer_pool_get(BufferPool *pool)
+{
+    return pool && pool->allocate ? pool->allocate(pool->size) : NULL;
+}
+
+EXPORT void av_buffer_pool_uninit(BufferPool **pool)
+{
+    if (pool && *pool) { av_free(*pool); *pool = NULL; }
+}
+
 typedef void (*log_callback)(void *, int, const char *, void *);
 static log_callback log_sink;
 EXPORT void av_log_set_callback(log_callback callback) { log_sink = callback; }
@@ -123,11 +158,32 @@ EXPORT int sws_scale(void *ctx, const uint8_t *const src[], const int src_stride
     return h;
 }
 
+EXPORT void av_image_copy_plane_uc_from(uint8_t *dst, ptrdiff_t dst_stride, const uint8_t *src,
+                                        ptrdiff_t src_stride, ptrdiff_t byte_width, int height)
+{
+    for (int row = 0; row < height; ++row)
+        memcpy(dst + row * dst_stride, src + row * src_stride, (size_t)byte_width);
+}
+
+EXPORT void av_image_copy_uc_from(uint8_t *dst[4], const ptrdiff_t dst_stride[4],
+                                  const uint8_t *src[4], const ptrdiff_t src_stride[4],
+                                  int pixel_format, int width, int height)
+{
+    (void)pixel_format;
+    for (int plane = 0; plane < 2; ++plane)
+        av_image_copy_plane_uc_from(dst[plane], dst_stride[plane], src[plane], src_stride[plane], width, height);
+}
+
 typedef struct { int num, den; } Rational;
 EXPORT Rational av_add_q(Rational a, Rational b)
 {
     Rational result = { a.num * b.den + b.num * a.den, a.den * b.den };
     return result;
+}
+
+EXPORT int64_t av_rescale_q(int64_t value, Rational source, Rational destination)
+{
+    return value * source.num * destination.den / source.den / destination.num;
 }
 
 EXPORT double av_display_rotation_get(const int32_t matrix[9]) { return matrix[0] + matrix[8]; }
@@ -136,29 +192,3 @@ EXPORT void av_display_rotation_set(int32_t matrix[9], double angle)
     matrix[0] = (int32_t)angle;
     matrix[8] = -(int32_t)angle;
 }
-
-/* Mirrors the checked-in header's public fields. C owns the ABI and C long width here. */
-typedef struct {
-    void *av_class;
-    uint8_t *buffer;
-    int buffer_size;
-    uint8_t *buf_ptr, *buf_end;
-    void *opaque, *read_packet, *write_packet, *seek;
-    int64_t pos;
-    int eof_reached, error, write_flag, max_packet_size, min_packet_size;
-    unsigned long checksum;
-    uint8_t *checksum_ptr;
-    void *update_checksum, *read_pause, *read_seek;
-    int seekable, direct;
-    uint8_t *protocol_whitelist, *protocol_blacklist;
-    void *write_data_type;
-    int ignore_boundary_point;
-    uint8_t *buf_ptr_max;
-    int64_t bytes_read, bytes_written;
-} SmokeAVIOContext;
-
-EXPORT int smoke_sizeof_long(void) { return (int)sizeof(unsigned long); }
-EXPORT int smoke_sizeof_avio(void) { return (int)sizeof(SmokeAVIOContext); }
-EXPORT int smoke_offset_checksum(void) { return (int)offsetof(SmokeAVIOContext, checksum); }
-EXPORT int smoke_offset_checksum_ptr(void) { return (int)offsetof(SmokeAVIOContext, checksum_ptr); }
-EXPORT int smoke_offset_bytes_read(void) { return (int)offsetof(SmokeAVIOContext, bytes_read); }

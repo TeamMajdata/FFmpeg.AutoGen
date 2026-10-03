@@ -6,8 +6,8 @@ using System.Runtime.InteropServices;
 using CLong = System.Int32;
 using CULong = System.UInt32;
 #else
-using CLong = System.Int64;
-using CULong = System.UInt64;
+using CLong = System.IntPtr;
+using CULong = System.UIntPtr;
 #endif
 
 namespace FFmpeg.AutoGen
@@ -61,7 +61,7 @@ public unsafe partial struct AVBufferRef
     /// <summary>The data buffer. It is considered writable if and only if this is the only reference to the buffer, in which case av_buffer_is_writable() returns 1.</summary>
     public byte* @data;
     /// <summary>Size of data in bytes.</summary>
-    public ulong @size;
+    public nuint @size;
 }
 
 /// <summary>This structure contains the parameters describing the frames that will be passed to this filter.</summary>
@@ -681,7 +681,7 @@ public unsafe partial struct AVD3D11FrameDescriptor
     /// <summary>The texture in which the frame is located. The reference count is managed by the AVBufferRef, and destroying the reference will release the interface.</summary>
     public ID3D11Texture2D* @texture;
     /// <summary>The index into the array texture element representing the frame, or 0 if the texture is not an array texture.</summary>
-    public long @index;
+    public nint @index;
 }
 
 /// <summary>This structure is used to provides the necessary configurations and data to the Direct3D11 FFmpeg HWAccel implementation.</summary>
@@ -883,7 +883,7 @@ public unsafe partial struct AVFilter
 public unsafe partial struct AVFilterChain
 {
     public AVFilterParams** @filters;
-    public ulong @nb_filters;
+    public nuint @nb_filters;
 }
 
 /// <summary>An instance of a filter</summary>
@@ -970,7 +970,7 @@ public unsafe partial struct AVFilterGraphSegment
     public AVFilterGraph* @graph;
     /// <summary>A list of filter chain contained in this segment. Set in avfilter_graph_segment_parse().</summary>
     public AVFilterChain** @chains;
-    public ulong @nb_chains;
+    public nuint @nb_chains;
     /// <summary>A string containing a colon-separated list of key=value options applied to all scale filters in this segment.</summary>
     public byte* @scale_sws_opts;
 }
@@ -1264,10 +1264,10 @@ public unsafe partial struct AVFrame
     /// <summary>Frame owner&apos;s private data.</summary>
     public AVBufferRef* @opaque_ref;
     /// <summary>cropping Video frames only. The number of pixels to discard from the top/bottom/left/right border of the frame to obtain the sub-rectangle of the frame intended for presentation. @{</summary>
-    public ulong @crop_top;
-    public ulong @crop_bottom;
-    public ulong @crop_left;
-    public ulong @crop_right;
+    public nuint @crop_top;
+    public nuint @crop_bottom;
+    public nuint @crop_left;
+    public nuint @crop_right;
     /// <summary>RefStruct reference for internal use by a single libav* library. Must not be used to transfer data between libraries. Has to be NULL when ownership of the frame leaves the respective library.</summary>
     public void* @private_ref;
     /// <summary>Channel layout of the audio data.</summary>
@@ -1283,7 +1283,7 @@ public unsafe partial struct AVFrameSideData
 {
     public AVFrameSideDataType @type;
     public byte* @data;
-    public ulong @size;
+    public nuint @size;
     public AVDictionary* @metadata;
     public AVBufferRef* @buf;
 }
@@ -1688,7 +1688,7 @@ public unsafe partial struct AVPacket
 public unsafe partial struct AVPacketSideData
 {
     public byte* @data;
-    public ulong @size;
+    public nuint @size;
     public AVPacketSideDataType @type;
 }
 
@@ -1816,7 +1816,7 @@ public unsafe partial struct AVRTSPCommandRequest
     /// <summary>Headers sent in the request to the server</summary>
     public AVDictionary* @headers;
     /// <summary>Body payload size</summary>
-    public ulong @body_len;
+    public nuint @body_len;
     /// <summary>Body payload</summary>
     public byte* @body;
 }
@@ -1828,7 +1828,7 @@ public unsafe partial struct AVRTSPResponse
     /// <summary>Reason phrase from the server, describing the status in a human-readable way.</summary>
     public byte* @reason;
     /// <summary>Body payload size</summary>
-    public ulong @body_len;
+    public nuint @body_len;
     /// <summary>Body payload</summary>
     public byte* @body;
 }

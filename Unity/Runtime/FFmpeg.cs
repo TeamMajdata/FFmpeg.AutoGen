@@ -18,15 +18,6 @@ namespace FFmpeg.AutoGen
         public static readonly int EINVAL = 22;
         public static readonly int EPIPE = 32;
 
-        static ffmpeg()
-        {
-            if (IntPtr.Size != 8)
-            {
-                throw new PlatformNotSupportedException(
-                    "FFmpeg.AutoGen Unity bindings require a 64-bit process and matching 64-bit FFmpeg libraries.");
-            }
-        }
-
         /// <summary>
         /// Copies a null-terminated UTF-8 string from native memory without freeing it.
         /// A null pointer returns null. The pointer must remain valid for this call.

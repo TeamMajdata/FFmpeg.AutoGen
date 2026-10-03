@@ -30,7 +30,7 @@ FFmpeg auto generated unsafe bindings for C#/.NET and Mono.
 
 ### Unity (Mono / IL2CPP)
 
-The [`Unity/`](Unity/README.md) directory is a standalone UPM source package for Unity 6000.3.17f1 and newer, targeting 64-bit Windows, Linux, macOS, Android and iOS. Add this repository as a submodule outside `Assets`, then reference its `Unity` subdirectory as a local package. See the [Unity integration guide](Unity/README.md) for native library deployment, AOT callbacks, samples and verification. FFmpeg native binaries must be supplied separately.
+The [`Unity/`](Unity/README.md) directory is a standalone UPM source package for Unity 6000.3.17f1 and newer, targeting Windows x86/x64, Android ARMv7/ARM64/x86_64, and 64-bit Linux, macOS and iOS. Add this repository as a submodule outside `Assets`, then reference its `Unity` subdirectory as a local package. See the [Unity integration guide](Unity/README.md) for native library deployment, AOT callbacks, samples and verification. FFmpeg native binaries must be supplied separately.
 
 ### .NET
 

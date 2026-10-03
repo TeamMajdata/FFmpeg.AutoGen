@@ -6,8 +6,8 @@ using System.Runtime.InteropServices;
 using CLong = System.Int32;
 using CULong = System.UInt32;
 #else
-using CLong = System.Int64;
-using CULong = System.UInt64;
+using CLong = System.IntPtr;
+using CULong = System.UIntPtr;
 #endif
 
 namespace FFmpeg.AutoGen
@@ -22,7 +22,7 @@ public unsafe struct av_buffer_create_free_func
 }
 
 [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-public unsafe delegate AVBufferRef* av_buffer_pool_init_alloc (ulong @size);
+public unsafe delegate AVBufferRef* av_buffer_pool_init_alloc (nuint @size);
 public unsafe struct av_buffer_pool_init_alloc_func
 {
     public IntPtr Pointer;
@@ -30,7 +30,7 @@ public unsafe struct av_buffer_pool_init_alloc_func
 }
 
 [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-public unsafe delegate AVBufferRef* av_buffer_pool_init2_alloc (void* @opaque, ulong @size);
+public unsafe delegate AVBufferRef* av_buffer_pool_init2_alloc (void* @opaque, nuint @size);
 public unsafe struct av_buffer_pool_init2_alloc_func
 {
     public IntPtr Pointer;
@@ -216,7 +216,7 @@ public unsafe struct AVFilterGraph_execute_func
 }
 
 [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-public unsafe delegate int AVFormatContext_control_message_cb (AVFormatContext* @s, int @type, void* @data, ulong @data_size);
+public unsafe delegate int AVFormatContext_control_message_cb (AVFormatContext* @s, int @type, void* @data, nuint @data_size);
 public unsafe struct AVFormatContext_control_message_cb_func
 {
     public IntPtr Pointer;

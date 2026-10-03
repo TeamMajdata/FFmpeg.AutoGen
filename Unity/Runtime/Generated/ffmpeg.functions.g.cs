@@ -274,11 +274,11 @@ public static unsafe partial class ffmpeg
     /// <summary>Allocate an AVBuffer of the given size using av_malloc().</summary>
     /// <returns>an AVBufferRef of given size or NULL when out of memory</returns>
     [DllImport(NativeLibraries.avutil, EntryPoint = "av_buffer_alloc", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-    public static extern AVBufferRef* av_buffer_alloc(ulong @size);
+    public static extern AVBufferRef* av_buffer_alloc(nuint @size);
     
     /// <summary>Same as av_buffer_alloc(), except the returned buffer will be initialized to zero.</summary>
     [DllImport(NativeLibraries.avutil, EntryPoint = "av_buffer_allocz", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-    public static extern AVBufferRef* av_buffer_allocz(ulong @size);
+    public static extern AVBufferRef* av_buffer_allocz(nuint @size);
     
     /// <summary>Create an AVBuffer from an existing array.</summary>
     /// <param name="data">data array</param>
@@ -287,13 +287,13 @@ public static unsafe partial class ffmpeg
     /// <param name="opaque">parameter to be got for processing or passed to free</param>
     /// <param name="flags">a combination of AV_BUFFER_FLAG_*</param>
     /// <returns>an AVBufferRef referring to data on success, NULL on failure.</returns>
-    public static AVBufferRef* av_buffer_create(byte* @data, ulong @size, av_buffer_create_free_func @free, void* @opaque, int @flags)
+    public static AVBufferRef* av_buffer_create(byte* @data, nuint @size, av_buffer_create_free_func @free, void* @opaque, int @flags)
     {
         return __PInvoke_av_buffer_create(@data, @size, @free.Pointer, @opaque, @flags);
     }
 
     [DllImport(NativeLibraries.avutil, EntryPoint = "av_buffer_create", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-    private static extern AVBufferRef* __PInvoke_av_buffer_create(byte* @data, ulong @size, IntPtr @free, void* @opaque, int @flags);
+    private static extern AVBufferRef* __PInvoke_av_buffer_create(byte* @data, nuint @size, IntPtr @free, void* @opaque, int @flags);
     
     /// <summary>Default free callback, which calls av_free() on the buffer data. This function is meant to be passed to av_buffer_create(), not called directly.</summary>
     [DllImport(NativeLibraries.avutil, EntryPoint = "av_buffer_default_free", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
@@ -333,13 +333,13 @@ public static unsafe partial class ffmpeg
     /// <param name="size">size of each buffer in this pool</param>
     /// <param name="alloc">a function that will be used to allocate new buffers when the pool is empty. May be NULL, then the default allocator will be used (av_buffer_alloc()).</param>
     /// <returns>newly created buffer pool on success, NULL on error.</returns>
-    public static AVBufferPool* av_buffer_pool_init(ulong @size, av_buffer_pool_init_alloc_func @alloc)
+    public static AVBufferPool* av_buffer_pool_init(nuint @size, av_buffer_pool_init_alloc_func @alloc)
     {
         return __PInvoke_av_buffer_pool_init(@size, @alloc.Pointer);
     }
 
     [DllImport(NativeLibraries.avutil, EntryPoint = "av_buffer_pool_init", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-    private static extern AVBufferPool* __PInvoke_av_buffer_pool_init(ulong @size, IntPtr @alloc);
+    private static extern AVBufferPool* __PInvoke_av_buffer_pool_init(nuint @size, IntPtr @alloc);
     
     /// <summary>Allocate and initialize a buffer pool with a more complex allocator.</summary>
     /// <param name="size">size of each buffer in this pool</param>
@@ -347,13 +347,13 @@ public static unsafe partial class ffmpeg
     /// <param name="alloc">a function that will be used to allocate new buffers when the pool is empty. May be NULL, then the default allocator will be used (av_buffer_alloc()).</param>
     /// <param name="pool_free">a function that will be called immediately before the pool is freed. I.e. after av_buffer_pool_uninit() is called by the caller and all the frames are returned to the pool and freed. It is intended to uninitialize the user opaque data. May be NULL.</param>
     /// <returns>newly created buffer pool on success, NULL on error.</returns>
-    public static AVBufferPool* av_buffer_pool_init2(ulong @size, void* @opaque, av_buffer_pool_init2_alloc_func @alloc, av_buffer_pool_init2_pool_free_func @pool_free)
+    public static AVBufferPool* av_buffer_pool_init2(nuint @size, void* @opaque, av_buffer_pool_init2_alloc_func @alloc, av_buffer_pool_init2_pool_free_func @pool_free)
     {
         return __PInvoke_av_buffer_pool_init2(@size, @opaque, @alloc.Pointer, @pool_free.Pointer);
     }
 
     [DllImport(NativeLibraries.avutil, EntryPoint = "av_buffer_pool_init2", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-    private static extern AVBufferPool* __PInvoke_av_buffer_pool_init2(ulong @size, void* @opaque, IntPtr @alloc, IntPtr @pool_free);
+    private static extern AVBufferPool* __PInvoke_av_buffer_pool_init2(nuint @size, void* @opaque, IntPtr @alloc, IntPtr @pool_free);
     
     /// <summary>Mark the pool as being available for freeing. It will actually be freed only once all the allocated buffers associated with the pool are released. Thus it is safe to call this function while some of the allocated buffers are still in use.</summary>
     /// <param name="pool">pointer to the pool to be freed. It will be set to NULL.</param>
@@ -365,7 +365,7 @@ public static unsafe partial class ffmpeg
     /// <param name="size">required new buffer size.</param>
     /// <returns>0 on success, a negative AVERROR on failure.</returns>
     [DllImport(NativeLibraries.avutil, EntryPoint = "av_buffer_realloc", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-    public static extern int av_buffer_realloc(AVBufferRef** @buf, ulong @size);
+    public static extern int av_buffer_realloc(AVBufferRef** @buf, nuint @size);
     
     /// <summary>Create a new reference to an AVBuffer.</summary>
     /// <returns>a new AVBufferRef referring to the same AVBuffer as buf or NULL on failure.</returns>
@@ -506,7 +506,7 @@ public static unsafe partial class ffmpeg
     /// <param name="size">Size of the single element</param>
     /// <returns>Pointer to the allocated block, or `NULL` if the block cannot be allocated</returns>
     [DllImport(NativeLibraries.avutil, EntryPoint = "av_calloc", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-    public static extern void* av_calloc(ulong @nmemb, ulong @size);
+    public static extern void* av_calloc(nuint @nmemb, nuint @size);
     
     /// <summary>Get a human readable string describing a given channel.</summary>
     /// <param name="buf">pre-allocated buffer where to put the generated string</param>
@@ -514,7 +514,7 @@ public static unsafe partial class ffmpeg
     /// <param name="channel">the AVChannel whose description to get</param>
     /// <returns>amount of bytes needed to hold the output string, or a negative AVERROR on failure. If the returned value is bigger than buf_size, then the string was truncated.</returns>
     [DllImport(NativeLibraries.avutil, EntryPoint = "av_channel_description", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-    public static extern int av_channel_description(byte* @buf, ulong @buf_size, AVChannel @channel);
+    public static extern int av_channel_description(byte* @buf, nuint @buf_size, AVChannel @channel);
     
     /// <summary>bprint variant of av_channel_description().</summary>
     [DllImport(NativeLibraries.avutil, EntryPoint = "av_channel_description_bprint", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
@@ -606,7 +606,7 @@ public static unsafe partial class ffmpeg
     /// <param name="buf_size">size in bytes of the buffer.</param>
     /// <returns>amount of bytes needed to hold the output string, or a negative AVERROR on failure. If the returned value is bigger than buf_size, then the string was truncated.</returns>
     [DllImport(NativeLibraries.avutil, EntryPoint = "av_channel_layout_describe", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-    public static extern int av_channel_layout_describe(AVChannelLayout* @channel_layout, byte* @buf, ulong @buf_size);
+    public static extern int av_channel_layout_describe(AVChannelLayout* @channel_layout, byte* @buf, nuint @buf_size);
     
     /// <summary>bprint variant of av_channel_layout_describe().</summary>
     /// <returns>0 on success, or a negative AVERROR value on failure.</returns>
@@ -695,7 +695,7 @@ public static unsafe partial class ffmpeg
     /// <param name="channel">the AVChannel whose name to get</param>
     /// <returns>amount of bytes needed to hold the output string, or a negative AVERROR on failure. If the returned value is bigger than buf_size, then the string was truncated.</returns>
     [DllImport(NativeLibraries.avutil, EntryPoint = "av_channel_name", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-    public static extern int av_channel_name(byte* @buf, ulong @buf_size, AVChannel @channel);
+    public static extern int av_channel_name(byte* @buf, nuint @buf_size, AVChannel @channel);
     
     /// <summary>bprint variant of av_channel_name().</summary>
     [DllImport(NativeLibraries.avutil, EntryPoint = "av_channel_name_bprint", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
@@ -915,7 +915,7 @@ public static unsafe partial class ffmpeg
     /// <summary>Allocate an AVContentLightMetadata structure and set its fields to default values. The resulting struct can be freed using av_freep().</summary>
     /// <returns>An AVContentLightMetadata filled with default values or NULL on failure.</returns>
     [DllImport(NativeLibraries.avutil, EntryPoint = "av_content_light_metadata_alloc", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-    public static extern AVContentLightMetadata* av_content_light_metadata_alloc(ulong* @size);
+    public static extern AVContentLightMetadata* av_content_light_metadata_alloc(nuint* @size);
     
     /// <summary>Allocate a complete AVContentLightMetadata and add it to the frame.</summary>
     /// <param name="frame">The frame which side data is added to.</param>
@@ -927,7 +927,7 @@ public static unsafe partial class ffmpeg
     /// <param name="size">if non-NULL, the size of the allocated struct will be written here. This is useful for embedding it in side data.</param>
     /// <returns>the newly allocated struct or NULL on failure</returns>
     [DllImport(NativeLibraries.avcodec, EntryPoint = "av_cpb_properties_alloc", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-    public static extern AVCPBProperties* av_cpb_properties_alloc(ulong* @size);
+    public static extern AVCPBProperties* av_cpb_properties_alloc(nuint* @size);
     
     /// <summary>Returns the number of logical CPU cores present.</summary>
     /// <returns>the number of logical CPU cores present.</returns>
@@ -940,7 +940,7 @@ public static unsafe partial class ffmpeg
     
     /// <summary>Get the maximum data alignment that may be required by FFmpeg.</summary>
     [DllImport(NativeLibraries.avutil, EntryPoint = "av_cpu_max_align", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-    public static extern ulong av_cpu_max_align();
+    public static extern nuint av_cpu_max_align();
     
     /// <summary>Convert a double precision floating point number to a rational.</summary>
     /// <param name="d">`double` to convert</param>
@@ -1191,7 +1191,7 @@ public static unsafe partial class ffmpeg
     /// <summary>Allocate an AVDynamicHDRPlus structure and set its fields to default values. The resulting struct can be freed using av_freep().</summary>
     /// <returns>An AVDynamicHDRPlus filled with default values or NULL on failure.</returns>
     [DllImport(NativeLibraries.avutil, EntryPoint = "av_dynamic_hdr_plus_alloc", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-    public static extern AVDynamicHDRPlus* av_dynamic_hdr_plus_alloc(ulong* @size);
+    public static extern AVDynamicHDRPlus* av_dynamic_hdr_plus_alloc(nuint* @size);
     
     /// <summary>Allocate a complete AVDynamicHDRPlus and add it to the frame.</summary>
     /// <param name="frame">The frame which side data is added to.</param>
@@ -1205,7 +1205,7 @@ public static unsafe partial class ffmpeg
     /// <param name="size">Size of the data array in bytes.</param>
     /// <returns>&gt;= 0 on success. Otherwise, returns the appropriate AVERROR.</returns>
     [DllImport(NativeLibraries.avutil, EntryPoint = "av_dynamic_hdr_plus_from_t35", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-    public static extern int av_dynamic_hdr_plus_from_t35(AVDynamicHDRPlus* @s, byte* @data, ulong @size);
+    public static extern int av_dynamic_hdr_plus_from_t35(AVDynamicHDRPlus* @s, byte* @data, nuint @size);
     
     /// <summary>Serialize dynamic HDR10+ metadata to a user data registered ITU-T T.35 buffer, excluding the first 48 bytes of the header, and beginning with the application mode.</summary>
     /// <param name="s">A pointer containing the decoded AVDynamicHDRPlus structure.</param>
@@ -1213,12 +1213,12 @@ public static unsafe partial class ffmpeg
     /// <param name="size">A pointer to a size to be set to the returned buffer&apos;s size. If *data is not NULL, *size must contain the size of the input buffer. May be NULL only if *data is NULL.</param>
     /// <returns>&gt;= 0 on success. Otherwise, returns the appropriate AVERROR.</returns>
     [DllImport(NativeLibraries.avutil, EntryPoint = "av_dynamic_hdr_plus_to_t35", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-    public static extern int av_dynamic_hdr_plus_to_t35(AVDynamicHDRPlus* @s, byte** @data, ulong* @size);
+    public static extern int av_dynamic_hdr_plus_to_t35(AVDynamicHDRPlus* @s, byte** @data, nuint* @size);
     
     /// <summary>Allocate an AVDynamicHDRSmpte2094App5 structure and set its fields to default values. The resulting struct can be freed using av_freep().</summary>
     /// <returns>An AVDynamicHDRSmpte2094App5 filled with default values or NULL on failure.</returns>
     [DllImport(NativeLibraries.avutil, EntryPoint = "av_dynamic_hdr_smpte2094_app5_alloc", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-    public static extern AVDynamicHDRSmpte2094App5* av_dynamic_hdr_smpte2094_app5_alloc(ulong* @size);
+    public static extern AVDynamicHDRSmpte2094App5* av_dynamic_hdr_smpte2094_app5_alloc(nuint* @size);
     
     /// <summary>Allocate a complete AVDynamicHDRSmpte2094App5 and add it to the frame.</summary>
     /// <param name="frame">The frame which side data is added to.</param>
@@ -1232,7 +1232,7 @@ public static unsafe partial class ffmpeg
     /// <param name="size">Size of the data array in bytes.</param>
     /// <returns>&gt;= 0 on success. Otherwise, returns the appropriate AVERROR.</returns>
     [DllImport(NativeLibraries.avutil, EntryPoint = "av_dynamic_hdr_smpte2094_app5_from_t35", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-    public static extern int av_dynamic_hdr_smpte2094_app5_from_t35(AVDynamicHDRSmpte2094App5* @s, byte* @data, ulong @size);
+    public static extern int av_dynamic_hdr_smpte2094_app5_from_t35(AVDynamicHDRSmpte2094App5* @s, byte* @data, nuint @size);
     
     /// <summary>Serialize dynamic SMPTE-2094-50 metadata to a ITU-T T.35 message. Excluding the country_code, provider_code and provider_oriented_code.</summary>
     /// <param name="s">A pointer containing the AVDynamicHDRSmpte2094App5 data.</param>
@@ -1240,7 +1240,7 @@ public static unsafe partial class ffmpeg
     /// <param name="size">A pointer to a size to be set to the returned buffer&apos;s size. If *data is not NULL, *size must contain the size of the input buffer. May be NULL only if *data is NULL.</param>
     /// <returns>&gt;= 0 on success. Otherwise, returns the appropriate AVERROR.</returns>
     [DllImport(NativeLibraries.avutil, EntryPoint = "av_dynamic_hdr_smpte2094_app5_to_t35", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-    public static extern int av_dynamic_hdr_smpte2094_app5_to_t35(AVDynamicHDRSmpte2094App5* @s, byte** @data, ulong* @size);
+    public static extern int av_dynamic_hdr_smpte2094_app5_to_t35(AVDynamicHDRSmpte2094App5* @s, byte** @data, nuint* @size);
     
     /// <summary>Add the pointer to an element to a dynamic array.</summary>
     /// <param name="tab_ptr">Pointer to the array to grow</param>
@@ -1261,29 +1261,29 @@ public static unsafe partial class ffmpeg
     /// <param name="elem_data">Pointer to the data of the element to add. If `NULL`, the space of the newly added element is allocated but left uninitialized.</param>
     /// <returns>Pointer to the data of the element to copy in the newly allocated space</returns>
     [DllImport(NativeLibraries.avutil, EntryPoint = "av_dynarray2_add", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-    public static extern void* av_dynarray2_add(void** @tab_ptr, int* @nb_ptr, ulong @elem_size, byte* @elem_data);
+    public static extern void* av_dynarray2_add(void** @tab_ptr, int* @nb_ptr, nuint @elem_size, byte* @elem_data);
     
     /// <summary>Allocate a buffer, reusing the given one if large enough.</summary>
     /// <param name="ptr">Pointer to pointer to an already allocated buffer. `*ptr` will be overwritten with pointer to new buffer on success or `NULL` on failure</param>
     /// <param name="size">Pointer to the size of buffer `*ptr`. `*size` is updated to the new allocated size, in particular 0 in case of failure.</param>
     /// <param name="min_size">Desired minimal size of buffer `*ptr`</param>
     [DllImport(NativeLibraries.avutil, EntryPoint = "av_fast_malloc", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-    public static extern void av_fast_malloc(void* @ptr, uint* @size, ulong @min_size);
+    public static extern void av_fast_malloc(void* @ptr, uint* @size, nuint @min_size);
     
     /// <summary>Allocate and clear a buffer, reusing the given one if large enough.</summary>
     /// <param name="ptr">Pointer to pointer to an already allocated buffer. `*ptr` will be overwritten with pointer to new buffer on success or `NULL` on failure</param>
     /// <param name="size">Pointer to the size of buffer `*ptr`. `*size` is updated to the new allocated size, in particular 0 in case of failure.</param>
     /// <param name="min_size">Desired minimal size of buffer `*ptr`</param>
     [DllImport(NativeLibraries.avutil, EntryPoint = "av_fast_mallocz", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-    public static extern void av_fast_mallocz(void* @ptr, uint* @size, ulong @min_size);
+    public static extern void av_fast_mallocz(void* @ptr, uint* @size, nuint @min_size);
     
     /// <summary>Same behaviour av_fast_malloc but the buffer has additional AV_INPUT_BUFFER_PADDING_SIZE at the end which will always be 0.</summary>
     [DllImport(NativeLibraries.avcodec, EntryPoint = "av_fast_padded_malloc", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-    public static extern void av_fast_padded_malloc(void* @ptr, uint* @size, ulong @min_size);
+    public static extern void av_fast_padded_malloc(void* @ptr, uint* @size, nuint @min_size);
     
     /// <summary>Same behaviour av_fast_padded_malloc except that buffer will always be 0-initialized after call.</summary>
     [DllImport(NativeLibraries.avcodec, EntryPoint = "av_fast_padded_mallocz", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-    public static extern void av_fast_padded_mallocz(void* @ptr, uint* @size, ulong @min_size);
+    public static extern void av_fast_padded_mallocz(void* @ptr, uint* @size, nuint @min_size);
     
     /// <summary>Reallocate the given buffer if it is not large enough, otherwise do nothing.</summary>
     /// <param name="ptr">Already allocated buffer, or `NULL`</param>
@@ -1291,7 +1291,7 @@ public static unsafe partial class ffmpeg
     /// <param name="min_size">Desired minimal size of buffer `ptr`</param>
     /// <returns>`ptr` if the buffer is large enough, a pointer to newly reallocated buffer if the buffer was not large enough, or `NULL` in case of error</returns>
     [DllImport(NativeLibraries.avutil, EntryPoint = "av_fast_realloc", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-    public static extern void* av_fast_realloc(void* @ptr, uint* @size, ulong @min_size);
+    public static extern void* av_fast_realloc(void* @ptr, uint* @size, nuint @min_size);
     
     /// <summary>Read the file with name filename, and put its content in a newly allocated buffer or map it with mmap() when available. In case of success set *bufptr to the read or mmapped buffer, and *size to the size in bytes of the buffer in *bufptr. Unlike mmap this function succeeds with zero sized files, in this case *bufptr will be set to NULL and *size will be set to 0. The returned buffer must be released with av_file_unmap().</summary>
     /// <param name="filename">path to the file</param>
@@ -1300,7 +1300,7 @@ public static unsafe partial class ffmpeg
     /// <param name="log_offset">loglevel offset used for logging</param>
     /// <param name="log_ctx">context used for logging</param>
     /// <returns>a non negative number in case of success, a negative value corresponding to an AVERROR error code in case of failure</returns>
-    public static int av_file_map(string @filename, byte** @bufptr, ulong* @size, int @log_offset, void* @log_ctx)
+    public static int av_file_map(string @filename, byte** @bufptr, nuint* @size, int @log_offset, void* @log_ctx)
     {
         using (var __filename = new Utf8String(@filename))
         {
@@ -1309,16 +1309,16 @@ public static unsafe partial class ffmpeg
     }
 
     [DllImport(NativeLibraries.avutil, EntryPoint = "av_file_map", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-    private static extern int __PInvoke_av_file_map(byte* @filename, byte** @bufptr, ulong* @size, int @log_offset, void* @log_ctx);
+    private static extern int __PInvoke_av_file_map(byte* @filename, byte** @bufptr, nuint* @size, int @log_offset, void* @log_ctx);
 
     /// <summary>Raw UTF-8 pointer form. Follow the native API's buffer lifetime and ownership rules.</summary>
-    public static int av_file_map_utf8(byte* @filename, byte** @bufptr, ulong* @size, int @log_offset, void* @log_ctx) => __PInvoke_av_file_map(@filename, @bufptr, @size, @log_offset, @log_ctx);
+    public static int av_file_map_utf8(byte* @filename, byte** @bufptr, nuint* @size, int @log_offset, void* @log_ctx) => __PInvoke_av_file_map(@filename, @bufptr, @size, @log_offset, @log_ctx);
     
     /// <summary>Unmap or free the buffer bufptr created by av_file_map().</summary>
     /// <param name="bufptr">the buffer previously created with av_file_map()</param>
     /// <param name="size">size in bytes of bufptr, must be the same as returned by av_file_map()</param>
     [DllImport(NativeLibraries.avutil, EntryPoint = "av_file_unmap", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-    public static extern void av_file_unmap(byte* @bufptr, ulong @size);
+    public static extern void av_file_unmap(byte* @bufptr, nuint @size);
     
     /// <summary>Check whether filename actually is a numbered sequence generator.</summary>
     /// <param name="filename">possible numbered sequence string</param>
@@ -1475,7 +1475,7 @@ public static unsafe partial class ffmpeg
     /// <param name="size">size of the side data</param>
     /// <returns>newly added side data on success, NULL on error</returns>
     [DllImport(NativeLibraries.avutil, EntryPoint = "av_frame_new_side_data", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-    public static extern AVFrameSideData* av_frame_new_side_data(AVFrame* @frame, AVFrameSideDataType @type, ulong @size);
+    public static extern AVFrameSideData* av_frame_new_side_data(AVFrame* @frame, AVFrameSideDataType @type, nuint @size);
     
     /// <summary>Add a new side data to a frame from an existing AVBufferRef</summary>
     /// <param name="frame">a frame to which the side data should be added</param>
@@ -1558,7 +1558,7 @@ public static unsafe partial class ffmpeg
     /// <param name="flags">Some combination of AV_FRAME_SIDE_DATA_FLAG_* flags, or 0.</param>
     /// <returns>newly added side data on success, NULL on error.</returns>
     [DllImport(NativeLibraries.avutil, EntryPoint = "av_frame_side_data_new", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-    public static extern AVFrameSideData* av_frame_side_data_new(AVFrameSideData*** @sd, int* @nb_sd, AVFrameSideDataType @type, ulong @size, uint @flags);
+    public static extern AVFrameSideData* av_frame_side_data_new(AVFrameSideData*** @sd, int* @nb_sd, AVFrameSideDataType @type, nuint @size, uint @flags);
     
     /// <summary>Remove and free all side data instances of the given type from an array.</summary>
     [DllImport(NativeLibraries.avutil, EntryPoint = "av_frame_side_data_remove", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
@@ -2148,7 +2148,7 @@ public static unsafe partial class ffmpeg
     
     /// <summary>Copy image data located in uncacheable (e.g. GPU mapped) memory. Where available, this function will use special functionality for reading from such memory, which may result in greatly improved performance compared to plain av_image_copy_plane().</summary>
     [DllImport(NativeLibraries.avutil, EntryPoint = "av_image_copy_plane_uc_from", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-    public static extern void av_image_copy_plane_uc_from(byte* @dst, long @dst_linesize, byte* @src, long @src_linesize, long @bytewidth, int @height);
+    public static extern void av_image_copy_plane_uc_from(byte* @dst, nint @dst_linesize, byte* @src, nint @src_linesize, nint @bytewidth, int @height);
     
     /// <summary>Copy image data from an image into a buffer.</summary>
     /// <param name="dst">a buffer into which picture data will be copied</param>
@@ -2173,19 +2173,19 @@ public static unsafe partial class ffmpeg
     private static extern int __PInvoke_av_image_copy_to_buffer(byte* @dst, int @dst_size, byte_ptrArray4* @src_data, int_array4* @src_linesize, AVPixelFormat @pix_fmt, int @width, int @height, int @align);
     
     /// <summary>Copy image data located in uncacheable (e.g. GPU mapped) memory. Where available, this function will use special functionality for reading from such memory, which may result in greatly improved performance compared to plain av_image_copy().</summary>
-    public static void av_image_copy_uc_from(ref byte_ptrArray4 @dst_data, in long_array4 @dst_linesizes, in byte_ptrArray4 @src_data, in long_array4 @src_linesizes, AVPixelFormat @pix_fmt, int @width, int @height)
+    public static void av_image_copy_uc_from(ref byte_ptrArray4 @dst_data, in nint_array4 @dst_linesizes, in byte_ptrArray4 @src_data, in nint_array4 @src_linesizes, AVPixelFormat @pix_fmt, int @width, int @height)
     {
         fixed (byte_ptrArray4* __dst_data = &@dst_data)
-        fixed (long_array4* __dst_linesizes = &@dst_linesizes)
+        fixed (nint_array4* __dst_linesizes = &@dst_linesizes)
         fixed (byte_ptrArray4* __src_data = &@src_data)
-        fixed (long_array4* __src_linesizes = &@src_linesizes)
+        fixed (nint_array4* __src_linesizes = &@src_linesizes)
         {
             __PInvoke_av_image_copy_uc_from(__dst_data, __dst_linesizes, __src_data, __src_linesizes, @pix_fmt, @width, @height);
         }
     }
 
     [DllImport(NativeLibraries.avutil, EntryPoint = "av_image_copy_uc_from", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-    private static extern void __PInvoke_av_image_copy_uc_from(byte_ptrArray4* @dst_data, long_array4* @dst_linesizes, byte_ptrArray4* @src_data, long_array4* @src_linesizes, AVPixelFormat @pix_fmt, int @width, int @height);
+    private static extern void __PInvoke_av_image_copy_uc_from(byte_ptrArray4* @dst_data, nint_array4* @dst_linesizes, byte_ptrArray4* @src_data, nint_array4* @src_linesizes, AVPixelFormat @pix_fmt, int @width, int @height);
     
     /// <summary>Setup the data pointers and linesizes based on the specified image parameters and the provided array.</summary>
     /// <param name="dst_data">data pointers to be filled in</param>
@@ -2216,17 +2216,17 @@ public static unsafe partial class ffmpeg
     /// <param name="width">the width of the image in pixels</param>
     /// <param name="height">the height of the image in pixels</param>
     /// <returns>0 if the image data was cleared, a negative AVERROR code otherwise</returns>
-    public static int av_image_fill_black(ref byte_ptrArray4 @dst_data, in long_array4 @dst_linesize, AVPixelFormat @pix_fmt, AVColorRange @range, int @width, int @height)
+    public static int av_image_fill_black(ref byte_ptrArray4 @dst_data, in nint_array4 @dst_linesize, AVPixelFormat @pix_fmt, AVColorRange @range, int @width, int @height)
     {
         fixed (byte_ptrArray4* __dst_data = &@dst_data)
-        fixed (long_array4* __dst_linesize = &@dst_linesize)
+        fixed (nint_array4* __dst_linesize = &@dst_linesize)
         {
             return __PInvoke_av_image_fill_black(__dst_data, __dst_linesize, @pix_fmt, @range, @width, @height);
         }
     }
 
     [DllImport(NativeLibraries.avutil, EntryPoint = "av_image_fill_black", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-    private static extern int __PInvoke_av_image_fill_black(byte_ptrArray4* @dst_data, long_array4* @dst_linesize, AVPixelFormat @pix_fmt, AVColorRange @range, int @width, int @height);
+    private static extern int __PInvoke_av_image_fill_black(byte_ptrArray4* @dst_data, nint_array4* @dst_linesize, AVPixelFormat @pix_fmt, AVColorRange @range, int @width, int @height);
     
     /// <summary>Overwrite the image data with a color. This is suitable for filling a sub-rectangle of an image, meaning the padding between the right most pixel and the left most pixel on the next line will not be overwritten. For some formats, the image size might be rounded up due to inherent alignment.</summary>
     /// <param name="dst_data">data pointers to destination image</param>
@@ -2237,10 +2237,10 @@ public static unsafe partial class ffmpeg
     /// <param name="height">the height of the image in pixels</param>
     /// <param name="flags">currently unused</param>
     /// <returns>0 if the image data was filled, a negative AVERROR code otherwise</returns>
-    public static int av_image_fill_color(ref byte_ptrArray4 @dst_data, in long_array4 @dst_linesize, AVPixelFormat @pix_fmt, in uint_array4 @color, int @width, int @height, int @flags)
+    public static int av_image_fill_color(ref byte_ptrArray4 @dst_data, in nint_array4 @dst_linesize, AVPixelFormat @pix_fmt, in uint_array4 @color, int @width, int @height, int @flags)
     {
         fixed (byte_ptrArray4* __dst_data = &@dst_data)
-        fixed (long_array4* __dst_linesize = &@dst_linesize)
+        fixed (nint_array4* __dst_linesize = &@dst_linesize)
         fixed (uint_array4* __color = &@color)
         {
             return __PInvoke_av_image_fill_color(__dst_data, __dst_linesize, @pix_fmt, __color, @width, @height, @flags);
@@ -2248,7 +2248,7 @@ public static unsafe partial class ffmpeg
     }
 
     [DllImport(NativeLibraries.avutil, EntryPoint = "av_image_fill_color", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-    private static extern int __PInvoke_av_image_fill_color(byte_ptrArray4* @dst_data, long_array4* @dst_linesize, AVPixelFormat @pix_fmt, uint_array4* @color, int @width, int @height, int @flags);
+    private static extern int __PInvoke_av_image_fill_color(byte_ptrArray4* @dst_data, nint_array4* @dst_linesize, AVPixelFormat @pix_fmt, uint_array4* @color, int @width, int @height, int @flags);
     
     /// <summary>Fill plane linesizes for an image with pixel format pix_fmt and width width.</summary>
     /// <param name="linesizes">array to be filled with the linesize for each plane</param>
@@ -2288,17 +2288,17 @@ public static unsafe partial class ffmpeg
     /// <param name="height">height of the image in pixels</param>
     /// <param name="linesizes">the array containing the linesize for each plane, should be filled by av_image_fill_linesizes()</param>
     /// <returns>&gt;= 0 in case of success, a negative error code otherwise</returns>
-    public static int av_image_fill_plane_sizes(ref ulong_array4 @size, AVPixelFormat @pix_fmt, int @height, in long_array4 @linesizes)
+    public static int av_image_fill_plane_sizes(ref nuint_array4 @size, AVPixelFormat @pix_fmt, int @height, in nint_array4 @linesizes)
     {
-        fixed (ulong_array4* __size = &@size)
-        fixed (long_array4* __linesizes = &@linesizes)
+        fixed (nuint_array4* __size = &@size)
+        fixed (nint_array4* __linesizes = &@linesizes)
         {
             return __PInvoke_av_image_fill_plane_sizes(__size, @pix_fmt, @height, __linesizes);
         }
     }
 
     [DllImport(NativeLibraries.avutil, EntryPoint = "av_image_fill_plane_sizes", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-    private static extern int __PInvoke_av_image_fill_plane_sizes(ulong_array4* @size, AVPixelFormat @pix_fmt, int @height, long_array4* @linesizes);
+    private static extern int __PInvoke_av_image_fill_plane_sizes(nuint_array4* @size, AVPixelFormat @pix_fmt, int @height, nint_array4* @linesizes);
     
     /// <summary>Fill plane data pointers for an image with pixel format pix_fmt and height height.</summary>
     /// <param name="data">pointers array to be filled with the pointer for each image plane</param>
@@ -2497,20 +2497,20 @@ public static unsafe partial class ffmpeg
     /// <param name="size">Size in bytes for the memory block to be allocated</param>
     /// <returns>Pointer to the allocated block, or `NULL` if the block cannot be allocated</returns>
     [DllImport(NativeLibraries.avutil, EntryPoint = "av_malloc", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-    public static extern void* av_malloc(ulong @size);
+    public static extern void* av_malloc(nuint @size);
     
     /// <summary>Allocate a memory block for an array with av_malloc().</summary>
     /// <param name="nmemb">Number of element</param>
     /// <param name="size">Size of a single element</param>
     /// <returns>Pointer to the allocated block, or `NULL` if the block cannot be allocated</returns>
     [DllImport(NativeLibraries.avutil, EntryPoint = "av_malloc_array", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-    public static extern void* av_malloc_array(ulong @nmemb, ulong @size);
+    public static extern void* av_malloc_array(nuint @nmemb, nuint @size);
     
     /// <summary>Allocate a memory block with alignment suitable for all memory accesses (including vectors if available on the CPU) and zero all the bytes of the block.</summary>
     /// <param name="size">Size in bytes for the memory block to be allocated</param>
     /// <returns>Pointer to the allocated block, or `NULL` if it cannot be allocated</returns>
     [DllImport(NativeLibraries.avutil, EntryPoint = "av_mallocz", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-    public static extern void* av_mallocz(ulong @size);
+    public static extern void* av_mallocz(nuint @size);
     
     /// <summary>Allocate an AVMasteringDisplayMetadata structure and set its fields to default values. The resulting struct can be freed using av_freep().</summary>
     /// <returns>An AVMasteringDisplayMetadata filled with default values or NULL on failure.</returns>
@@ -2520,7 +2520,7 @@ public static unsafe partial class ffmpeg
     /// <summary>Allocate an AVMasteringDisplayMetadata structure and set its fields to default values. The resulting struct can be freed using av_freep().</summary>
     /// <returns>An AVMasteringDisplayMetadata filled with default values or NULL on failure.</returns>
     [DllImport(NativeLibraries.avutil, EntryPoint = "av_mastering_display_metadata_alloc_size", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-    public static extern AVMasteringDisplayMetadata* av_mastering_display_metadata_alloc_size(ulong* @size);
+    public static extern AVMasteringDisplayMetadata* av_mastering_display_metadata_alloc_size(nuint* @size);
     
     /// <summary>Allocate a complete AVMasteringDisplayMetadata and add it to the frame.</summary>
     /// <param name="frame">The frame which side data is added to.</param>
@@ -2549,7 +2549,7 @@ public static unsafe partial class ffmpeg
     /// <summary>Set the maximum size that may be allocated in one block.</summary>
     /// <param name="max">Value to be set as the new maximum size</param>
     [DllImport(NativeLibraries.avutil, EntryPoint = "av_max_alloc", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-    public static extern void av_max_alloc(ulong @max);
+    public static extern void av_max_alloc(nuint @max);
     
     /// <summary>Overlapping memcpy() implementation.</summary>
     /// <param name="dst">Destination buffer</param>
@@ -2563,7 +2563,7 @@ public static unsafe partial class ffmpeg
     /// <param name="size">Size in bytes of the buffer copied</param>
     /// <returns>Pointer to a newly allocated buffer containing a copy of `p` or `NULL` if the buffer cannot be allocated</returns>
     [DllImport(NativeLibraries.avutil, EntryPoint = "av_memdup", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-    public static extern void* av_memdup(void* @p, ulong @size);
+    public static extern void* av_memdup(void* @p, nuint @size);
     
     /// <summary>Make a RFC 4281/6381 like string describing a codec for MIME types.</summary>
     /// <param name="par">pointer to an AVCodecParameters struct describing the codec</param>
@@ -3333,7 +3333,7 @@ public static unsafe partial class ffmpeg
     /// <param name="size">side information size</param>
     /// <returns>a non-negative number on success, a negative AVERROR code on failure. On failure, the packet is unchanged and the data remains owned by the caller.</returns>
     [DllImport(NativeLibraries.avcodec, EntryPoint = "av_packet_add_side_data", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-    public static extern int av_packet_add_side_data(AVPacket* @pkt, AVPacketSideDataType @type, byte* @data, ulong @size);
+    public static extern int av_packet_add_side_data(AVPacket* @pkt, AVPacketSideDataType @type, byte* @data, nuint @size);
     
     /// <summary>Allocate an AVPacket and set its fields to default values. The resulting struct must be freed using av_packet_free().</summary>
     /// <returns>An AVPacket filled with default values or NULL on failure.</returns>
@@ -3376,7 +3376,7 @@ public static unsafe partial class ffmpeg
     /// <param name="size">If supplied, *size will be set to the size of the side data or to zero if the desired side data is not present.</param>
     /// <returns>pointer to data if present or NULL otherwise</returns>
     [DllImport(NativeLibraries.avcodec, EntryPoint = "av_packet_get_side_data", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-    public static extern byte* av_packet_get_side_data(AVPacket* @pkt, AVPacketSideDataType @type, ulong* @size);
+    public static extern byte* av_packet_get_side_data(AVPacket* @pkt, AVPacketSideDataType @type, nuint* @size);
     
     /// <summary>Ensure the data described by a given packet is reference counted.</summary>
     /// <param name="pkt">packet whose data should be made reference counted.</param>
@@ -3402,14 +3402,14 @@ public static unsafe partial class ffmpeg
     /// <param name="size">side information size</param>
     /// <returns>pointer to fresh allocated data or NULL otherwise</returns>
     [DllImport(NativeLibraries.avcodec, EntryPoint = "av_packet_new_side_data", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-    public static extern byte* av_packet_new_side_data(AVPacket* @pkt, AVPacketSideDataType @type, ulong @size);
+    public static extern byte* av_packet_new_side_data(AVPacket* @pkt, AVPacketSideDataType @type, nuint @size);
     
     /// <summary>Pack a dictionary for use in side_data.</summary>
     /// <param name="dict">The dictionary to pack.</param>
     /// <param name="size">pointer to store the size of the returned data</param>
     /// <returns>pointer to data if successful, NULL otherwise</returns>
     [DllImport(NativeLibraries.avcodec, EntryPoint = "av_packet_pack_dictionary", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-    public static extern byte* av_packet_pack_dictionary(AVDictionary* @dict, ulong* @size);
+    public static extern byte* av_packet_pack_dictionary(AVDictionary* @dict, nuint* @size);
     
     /// <summary>Setup a new reference to the data described by a given packet</summary>
     /// <param name="dst">Destination packet. Will be completely overwritten.</param>
@@ -3431,7 +3431,7 @@ public static unsafe partial class ffmpeg
     /// <param name="size">new side information size</param>
     /// <returns>0 on success, &lt; 0 on failure</returns>
     [DllImport(NativeLibraries.avcodec, EntryPoint = "av_packet_shrink_side_data", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-    public static extern int av_packet_shrink_side_data(AVPacket* @pkt, AVPacketSideDataType @type, ulong @size);
+    public static extern int av_packet_shrink_side_data(AVPacket* @pkt, AVPacketSideDataType @type, nuint @size);
     
     /// <summary>Wrap existing data as packet side data.</summary>
     /// <param name="sd">pointer to an array of side data to which the side data should be added. *sd may be NULL, in which case the array will be initialized</param>
@@ -3442,7 +3442,7 @@ public static unsafe partial class ffmpeg
     /// <param name="flags">currently unused. Must be zero</param>
     /// <returns>pointer to freshly allocated side data on success, or NULL otherwise On failure, the side data array is unchanged and the data remains owned by the caller.</returns>
     [DllImport(NativeLibraries.avcodec, EntryPoint = "av_packet_side_data_add", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-    public static extern AVPacketSideData* av_packet_side_data_add(AVPacketSideData** @sd, int* @nb_sd, AVPacketSideDataType @type, void* @data, ulong @size, int @flags);
+    public static extern AVPacketSideData* av_packet_side_data_add(AVPacketSideData** @sd, int* @nb_sd, AVPacketSideDataType @type, void* @data, nuint @size, int @flags);
     
     /// <summary>Convenience function to free all the side data stored in an array, and the array itself.</summary>
     /// <param name="sd">pointer to array of side data to free. Will be set to NULL upon return.</param>
@@ -3480,7 +3480,7 @@ public static unsafe partial class ffmpeg
     /// <param name="flags">currently unused. Must be zero</param>
     /// <returns>pointer to freshly allocated side data on success, or NULL otherwise.</returns>
     [DllImport(NativeLibraries.avcodec, EntryPoint = "av_packet_side_data_new", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-    public static extern AVPacketSideData* av_packet_side_data_new(AVPacketSideData** @psd, int* @pnb_sd, AVPacketSideDataType @type, ulong @size, int @flags);
+    public static extern AVPacketSideData* av_packet_side_data_new(AVPacketSideData** @psd, int* @pnb_sd, AVPacketSideDataType @type, nuint @size, int @flags);
     
     /// <summary>Remove side data of the given type from a side data array.</summary>
     /// <param name="sd">the array from which the side data should be removed</param>
@@ -3500,7 +3500,7 @@ public static unsafe partial class ffmpeg
     /// <param name="dict">the metadata storage dictionary</param>
     /// <returns>0 on success, &lt; 0 on failure</returns>
     [DllImport(NativeLibraries.avcodec, EntryPoint = "av_packet_unpack_dictionary", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-    public static extern int av_packet_unpack_dictionary(byte* @data, ulong @size, AVDictionary** @dict);
+    public static extern int av_packet_unpack_dictionary(byte* @data, nuint @size, AVDictionary** @dict);
     
     /// <summary>Wipe the packet.</summary>
     /// <param name="pkt">The packet to be unreferenced.</param>
@@ -3734,7 +3734,7 @@ public static unsafe partial class ffmpeg
     /// <param name="size">Size in bytes of the memory block to be allocated or reallocated</param>
     /// <returns>Pointer to a newly-reallocated block or `NULL` if the block cannot be reallocated</returns>
     [DllImport(NativeLibraries.avutil, EntryPoint = "av_realloc", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-    public static extern void* av_realloc(void* @ptr, ulong @size);
+    public static extern void* av_realloc(void* @ptr, nuint @size);
     
     /// <summary>Allocate, reallocate, or free an array.</summary>
     /// <param name="ptr">Pointer to a memory block already allocated with av_realloc() or `NULL`</param>
@@ -3742,18 +3742,18 @@ public static unsafe partial class ffmpeg
     /// <param name="size">Size of the single element of the array</param>
     /// <returns>Pointer to a newly-reallocated block or NULL if the block cannot be reallocated</returns>
     [DllImport(NativeLibraries.avutil, EntryPoint = "av_realloc_array", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-    public static extern void* av_realloc_array(void* @ptr, ulong @nmemb, ulong @size);
+    public static extern void* av_realloc_array(void* @ptr, nuint @nmemb, nuint @size);
     
     /// <summary>Allocate, reallocate, or free a block of memory.</summary>
     [DllImport(NativeLibraries.avutil, EntryPoint = "av_realloc_f", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-    public static extern void* av_realloc_f(void* @ptr, ulong @nelem, ulong @elsize);
+    public static extern void* av_realloc_f(void* @ptr, nuint @nelem, nuint @elsize);
     
     /// <summary>Allocate, reallocate, or free a block of memory through a pointer to a pointer.</summary>
     /// <param name="ptr">Pointer to a pointer to a memory block already allocated with av_realloc(), or a pointer to `NULL`. The pointer is updated on success, or freed on failure.</param>
     /// <param name="size">Size in bytes for the memory block to be allocated or reallocated</param>
     /// <returns>Zero on success, an AVERROR error code on failure</returns>
     [DllImport(NativeLibraries.avutil, EntryPoint = "av_reallocp", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-    public static extern int av_reallocp(void* @ptr, ulong @size);
+    public static extern int av_reallocp(void* @ptr, nuint @size);
     
     /// <summary>Allocate, reallocate an array through a pointer to a pointer.</summary>
     /// <param name="ptr">Pointer to a pointer to a memory block already allocated with av_realloc(), or a pointer to `NULL`. The pointer is updated on success, or freed on failure.</param>
@@ -3761,7 +3761,7 @@ public static unsafe partial class ffmpeg
     /// <param name="size">Size of the single element</param>
     /// <returns>Zero on success, an AVERROR error code on failure</returns>
     [DllImport(NativeLibraries.avutil, EntryPoint = "av_reallocp_array", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-    public static extern int av_reallocp_array(void* @ptr, ulong @nmemb, ulong @size);
+    public static extern int av_reallocp_array(void* @ptr, nuint @nmemb, nuint @size);
     
     /// <summary>Reduce a fraction.</summary>
     /// <param name="dst_num">Destination numerator</param>
@@ -3914,7 +3914,7 @@ public static unsafe partial class ffmpeg
     /// <param name="r">Pointer to the result of the operation</param>
     /// <returns>0 on success, AVERROR(EINVAL) on overflow</returns>
     [DllImport(NativeLibraries.avutil, EntryPoint = "av_size_mult", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-    public static extern int av_size_mult(ulong @a, ulong @b, ulong* @r);
+    public static extern int av_size_mult(nuint @a, nuint @b, nuint* @r);
     
     /// <summary>Duplicate a string.</summary>
     /// <param name="s">String to be duplicated</param>
@@ -3950,13 +3950,13 @@ public static unsafe partial class ffmpeg
     /// <param name="errbuf_size">the size in bytes of errbuf</param>
     /// <returns>0 on success, a negative value if a description for errnum cannot be found</returns>
     [DllImport(NativeLibraries.avutil, EntryPoint = "av_strerror", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-    public static extern int av_strerror(int @errnum, byte* @errbuf, ulong @errbuf_size);
+    public static extern int av_strerror(int @errnum, byte* @errbuf, nuint @errbuf_size);
     
     /// <summary>Duplicate a substring of a string.</summary>
     /// <param name="s">String to be duplicated</param>
     /// <param name="len">Maximum length of the resulting string (not counting the terminating byte)</param>
     /// <returns>Pointer to a newly-allocated string containing a substring of `s` or `NULL` if the string cannot be allocated</returns>
-    public static byte* av_strndup(string @s, ulong @len)
+    public static byte* av_strndup(string @s, nuint @len)
     {
         using (var __s = new Utf8String(@s))
         {
@@ -3965,10 +3965,10 @@ public static unsafe partial class ffmpeg
     }
 
     [DllImport(NativeLibraries.avutil, EntryPoint = "av_strndup", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-    private static extern byte* __PInvoke_av_strndup(byte* @s, ulong @len);
+    private static extern byte* __PInvoke_av_strndup(byte* @s, nuint @len);
 
     /// <summary>Raw UTF-8 pointer form. Follow the native API's buffer lifetime and ownership rules.</summary>
-    public static byte* av_strndup_utf8(byte* @s, ulong @len) => __PInvoke_av_strndup(@s, @len);
+    public static byte* av_strndup_utf8(byte* @s, nuint @len) => __PInvoke_av_strndup(@s, @len);
     
     /// <summary>Subtract one rational from another.</summary>
     /// <param name="b">First rational</param>
@@ -4587,7 +4587,7 @@ public static unsafe partial class ffmpeg
     /// <param name="data_size">size of message data.</param>
     /// <returns>&gt;= 0 on success, negative on error. AVERROR(ENOSYS) when device doesn&apos;t implement handler of the message.</returns>
     [DllImport(NativeLibraries.avdevice, EntryPoint = "avdevice_app_to_dev_control_message", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-    public static extern int avdevice_app_to_dev_control_message(AVFormatContext* @s, AVAppToDevMessageType @type, void* @data, ulong @data_size);
+    public static extern int avdevice_app_to_dev_control_message(AVFormatContext* @s, AVAppToDevMessageType @type, void* @data, nuint @data_size);
     
     /// <summary>Return the libavdevice build-time configuration.</summary>
     public static string avdevice_configuration()
@@ -4608,7 +4608,7 @@ public static unsafe partial class ffmpeg
     /// <param name="data_size">size of message data.</param>
     /// <returns>&gt;= 0 on success, negative on error. AVERROR(ENOSYS) when application doesn&apos;t implement handler of the message.</returns>
     [DllImport(NativeLibraries.avdevice, EntryPoint = "avdevice_dev_to_app_control_message", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-    public static extern int avdevice_dev_to_app_control_message(AVFormatContext* @s, AVDevToAppMessageType @type, void* @data, ulong @data_size);
+    public static extern int avdevice_dev_to_app_control_message(AVFormatContext* @s, AVDevToAppMessageType @type, void* @data, nuint @data_size);
     
     /// <summary>Convenient function to free result of avdevice_list_devices().</summary>
     /// <param name="device_list">device list to be freed.</param>
@@ -5678,7 +5678,7 @@ public static unsafe partial class ffmpeg
     /// <summary>Read contents of h into print buffer, up to max_size bytes, or up to EOF.</summary>
     /// <returns>0 for success (max_size bytes read or EOF reached), negative error code otherwise</returns>
     [DllImport(NativeLibraries.avformat, EntryPoint = "avio_read_to_bprint", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-    public static extern int avio_read_to_bprint(AVIOContext* @h, AVBPrint* @pb, ulong @max_size);
+    public static extern int avio_read_to_bprint(AVIOContext* @h, AVBPrint* @pb, nuint @max_size);
     
     [DllImport(NativeLibraries.avformat, EntryPoint = "avio_rl16", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
     public static extern uint avio_rl16(AVIOContext* @s);
@@ -5832,7 +5832,7 @@ public static unsafe partial class ffmpeg
     /// <param name="matrix_encoding">matrixed stereo downmix mode (e.g. dplii)</param>
     /// <returns>0 on success, negative AVERROR code on failure</returns>
     [DllImport(NativeLibraries.swresample, EntryPoint = "swr_build_matrix2", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-    public static extern int swr_build_matrix2(AVChannelLayout* @in_layout, AVChannelLayout* @out_layout, double @center_mix_level, double @surround_mix_level, double @lfe_mix_level, double @maxval, double @rematrix_volume, double* @matrix, long @stride, AVMatrixEncoding @matrix_encoding, void* @log_context);
+    public static extern int swr_build_matrix2(AVChannelLayout* @in_layout, AVChannelLayout* @out_layout, double @center_mix_level, double @surround_mix_level, double @lfe_mix_level, double @maxval, double @rematrix_volume, double* @matrix, nint @stride, AVMatrixEncoding @matrix_encoding, void* @log_context);
     
     /// <summary>Closes the context so that swr_is_initialized() returns 0.</summary>
     /// <param name="s">Swr context to be closed</param>

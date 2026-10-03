@@ -1,7 +1,9 @@
 param(
     [string]$Compiler,
     [switch]$CompileOnly,
-    [switch]$SkipMatrix
+    [switch]$SkipMatrix,
+    [switch]$WindowsX86,
+    [string]$DotnetX86 = 'C:/Program Files (x86)/dotnet/dotnet.exe'
 )
 
 $ErrorActionPreference = 'Stop'
@@ -22,7 +24,7 @@ function Build-SmokeHost([string]$Platform) {
 if ($LASTEXITCODE -ne 0) { throw 'Offline restore failed. Install a .NET 9 SDK and runtime before running this check.' }
 
 if (-not $SkipMatrix) {
-    foreach ($platform in @('Windows', 'Linux', 'MacOS', 'Android', 'IOS', 'EditorAndroid', 'EditorIOS')) {
+    foreach ($platform in @('Windows', 'WindowsX86', 'Linux', 'MacOS', 'Android', 'AndroidArmv7', 'IOS', 'EditorAndroid', 'EditorIOS')) {
         Build-SmokeHost $platform
         & dotnet $hostDll --metadata $platform
         if ($LASTEXITCODE -ne 0) { throw "Interop metadata validation failed for $platform" }
@@ -55,6 +57,8 @@ if (-not $Compiler) {
 $nativeDirectory = Join-Path $PSScriptRoot 'native/bin'
 New-Item -ItemType Directory -Path $nativeDirectory -Force | Out-Null
 $source = Join-Path $PSScriptRoot 'native/smoke.c'
+$abiSource = Join-Path $PSScriptRoot 'native/abi.c'
+$headers = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../../FFmpeg/include'))
 $fileName = if ($runningOnWindows) { 'avutil-61.dll' }
     elseif ($nativePlatform -eq 'MacOS') { 'libffmpeg-unity-smoke.dylib' }
     else { 'libffmpeg-unity-smoke.so' }
@@ -63,7 +67,7 @@ $compilerOptions = @('-O2', '-Wall', '-Wextra', '-Werror')
 if ($nativePlatform -eq 'MacOS') { $compilerOptions += '-dynamiclib' }
 else { $compilerOptions += '-shared' }
 if (-not $runningOnWindows) { $compilerOptions += '-fPIC' }
-& $Compiler @compilerOptions $source -o $nativeLibrary
+& $Compiler @compilerOptions '-I' $headers $source $abiSource -o $nativeLibrary
 if ($LASTEXITCODE -ne 0) { throw 'Native test library compilation failed.' }
 if ($runningOnWindows) {
     Copy-Item -LiteralPath $nativeLibrary -Destination (Join-Path $nativeDirectory 'swscale-10.dll') -Force
@@ -72,3 +76,12 @@ if ($runningOnWindows) {
 Build-SmokeHost $nativePlatform
 & dotnet $hostDll $nativeLibrary
 if ($LASTEXITCODE -ne 0) { throw 'Native interop smoke test failed.' }
+
+if ($WindowsX86) {
+    if (-not $runningOnWindows) { throw '-WindowsX86 requires a Windows host.' }
+    if (-not (Test-Path -LiteralPath $DotnetX86)) { throw 'Install the x86 .NET 9 runtime, or pass -DotnetX86 <path>.' }
+    & (Join-Path $PSScriptRoot 'native/build-windows-x86.ps1')
+    Build-SmokeHost 'WindowsX86'
+    & $DotnetX86 $hostDll (Join-Path $nativeDirectory 'x86/avutil-61.dll')
+    if ($LASTEXITCODE -ne 0) { throw 'Windows x86 native interop smoke test failed.' }
+}
