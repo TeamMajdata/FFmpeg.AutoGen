@@ -16,7 +16,7 @@ git submodule update --init --recursive
 在 `Packages/manifest.json` 的 `dependencies` 内加入（保留其他依赖）：
 
 ```json
-"com.teammajdata.ffmpeg-autogen": "file:../ThirdParty/FFmpeg.AutoGen/Unity"
+"net.majdata.ffmpeg-autogen": "file:../ThirdParty/FFmpeg.AutoGen/Unity"
 ```
 
 提交父仓库的 `.gitmodules`、submodule commit 和 manifest。其他成员克隆时使用 `git clone --recurse-submodules`，已有克隆使用 `git submodule update --init --recursive`。UPM 加载的是本仓库的 **Unity 子目录**；不要把整个仓库放进 `Assets`，也不要将仓库根目录当作 UPM 包导入，否则生成器、示例和重复的 .NET 绑定可能进入编译。

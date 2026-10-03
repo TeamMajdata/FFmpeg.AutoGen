@@ -1,5 +1,5 @@
 {
-  "name": "com.teammajdata.ffmpeg-autogen",
+  "name": "net.majdata.ffmpeg-autogen",
   "version": "9.0.1-unity.2",
   "displayName": "FFmpeg.AutoGen for Unity",
   "description": "Unsafe FFmpeg 9 bindings for Unity Mono and IL2CPP, including Windows x86 and Android ARMv7. Native FFmpeg libraries must be supplied separately.",
@@ -9,7 +9,13 @@
   "author": {
     "name": "TeamMajdata"
   },
-  "keywords": ["ffmpeg", "video", "audio", "interop", "il2cpp"],
+  "keywords": [
+    "ffmpeg",
+    "video",
+    "audio",
+    "interop",
+    "il2cpp"
+  ],
   "samples": [
     {
       "displayName": "Native smoke test",
