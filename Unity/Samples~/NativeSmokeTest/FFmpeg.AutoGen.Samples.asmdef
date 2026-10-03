@@ -1,0 +1,6 @@
+{
+  "name": "FFmpeg.AutoGen.Samples",
+  "references": ["FFmpeg.AutoGen"],
+  "allowUnsafeCode": true,
+  "autoReferenced": true
+}

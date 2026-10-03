@@ -21,6 +21,7 @@ launchSettings.json
 *_p.c
 *.ilk
 *.meta
+!Unity/**/*.meta
 *.obj
 *.pch
 *.pdb

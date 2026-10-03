@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <LangVersion>9.0</LangVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <AssemblyName>FFmpeg.AutoGen.Unity.SmokeBindings</AssemblyName>
+    <UnityPlatform Condition="'$(UnityPlatform)' == ''">Windows</UnityPlatform>
+    <DefineConstants>$(DefineConstants);UNITY_6000_0_OR_NEWER;UNITY_64</DefineConstants>
+    <DefineConstants Condition="'$(UnityPlatform)' == 'Windows'">$(DefineConstants);UNITY_STANDALONE_WIN</DefineConstants>
+    <DefineConstants Condition="'$(UnityPlatform)' == 'Linux'">$(DefineConstants);UNITY_STANDALONE_LINUX</DefineConstants>
+    <DefineConstants Condition="'$(UnityPlatform)' == 'MacOS'">$(DefineConstants);UNITY_STANDALONE_OSX</DefineConstants>
+    <DefineConstants Condition="'$(UnityPlatform)' == 'Android'">$(DefineConstants);UNITY_ANDROID</DefineConstants>
+    <DefineConstants Condition="'$(UnityPlatform)' == 'IOS'">$(DefineConstants);UNITY_IOS</DefineConstants>
+    <DefineConstants Condition="'$(UnityPlatform)' == 'EditorAndroid'">$(DefineConstants);UNITY_EDITOR;UNITY_EDITOR_WIN;UNITY_ANDROID</DefineConstants>
+    <DefineConstants Condition="'$(UnityPlatform)' == 'EditorIOS'">$(DefineConstants);UNITY_EDITOR;UNITY_EDITOR_WIN;UNITY_IOS</DefineConstants>
+    <NoWarn>$(NoWarn);CS8981;CS0169;CS0108</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../../Unity/Runtime/**/*.cs" Link="Runtime/%(RecursiveDir)%(Filename)%(Extension)" />
+  </ItemGroup>
+  <Target Name="RequireGeneratedBindings" BeforeTargets="CoreCompile" Condition="!Exists('../../../Unity/Runtime')">
+    <Error Text="Unity/Runtime is missing. Generate the Unity bindings before running this smoke check." />
+  </Target>
+</Project>

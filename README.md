@@ -28,6 +28,12 @@ FFmpeg auto generated unsafe bindings for C#/.NET and Mono.
 
 ## Usage
 
+### Unity (Mono / IL2CPP)
+
+The [`Unity/`](Unity/README.md) directory is a standalone UPM source package for Unity 6000.3.17f1 and newer, targeting 64-bit Windows, Linux, macOS, Android and iOS. Add this repository as a submodule outside `Assets`, then reference its `Unity` subdirectory as a local package. See the [Unity integration guide](Unity/README.md) for native library deployment, AOT callbacks, samples and verification. FFmpeg native binaries must be supplied separately.
+
+### .NET
+
 The basic example of the library usage: video decoding, conversion and frame extraction to jpeg is included in ```FFmpeg.AutoGen.Example``` project.  
 For the more sophisticated operations please refer to offical [ffmpeg Documentation](https://www.ffmpeg.org/documentation.html) expecially API section of it.
 NuGet packages version uses [semantic versioning](https://semver.org/) and is in sync with the FFmpeg release the bindings are generated from, e.g. package `9.0.1` targets FFmpeg 9.0.1.

@@ -1,0 +1,14 @@
+{
+  "name": "FFmpeg.AutoGen",
+  "rootNamespace": "FFmpeg.AutoGen",
+  "references": [],
+  "includePlatforms": ["Editor", "WindowsStandalone64", "LinuxStandalone64", "macOSStandalone", "Android", "iOS"],
+  "excludePlatforms": [],
+  "allowUnsafeCode": true,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": true
+}

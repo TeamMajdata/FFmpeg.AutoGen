@@ -1,5 +1,6 @@
 # Linguist
 FFmpeg/* linguist-vendored
+Unity/Runtime/Generated/* linguist-generated
 # Auto detect text files and perform LF normalization
 * text=auto
 # Custom for Visual Studio

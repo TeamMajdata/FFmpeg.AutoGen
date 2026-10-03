@@ -1,0 +1,20 @@
+{
+  "name": "com.teammajdata.ffmpeg-autogen",
+  "version": "9.0.1-unity.1",
+  "displayName": "FFmpeg.AutoGen for Unity",
+  "description": "Unsafe FFmpeg 9 bindings for 64-bit Unity Mono and IL2CPP players. Native FFmpeg libraries must be supplied separately.",
+  "unity": "6000.3",
+  "unityRelease": "17f1",
+  "license": "MIT",
+  "author": {
+    "name": "TeamMajdata"
+  },
+  "keywords": ["ffmpeg", "video", "audio", "interop", "il2cpp"],
+  "samples": [
+    {
+      "displayName": "Native smoke test",
+      "description": "Checks FFmpeg versions, UTF-8, fixed arrays and an AOT-safe native callback in an actual player.",
+      "path": "Samples~/NativeSmokeTest"
+    }
+  ]
+}
